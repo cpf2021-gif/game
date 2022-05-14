@@ -9,6 +9,8 @@ import java.util.Random;
 public class Map {
     private static final int WIDTH = 50; // x
     private static final int HEIGHT = 50; // y
+    private static UnionDs union;
+
     public static void main(String[] args) {
 
         TERenderer ter = new TERenderer();
@@ -57,6 +59,19 @@ public class Map {
     public static boolean isOk(int x, int y, int width, int height) {
         return x>= 0 && x < width && y >= 0 && y < height;
     }
+
+    // 在外部直接调用,隐藏真正的细节
+    public static void connect(TETile[][] w, int width, int height) {
+        if(union == null) {
+            union = new UnionDs(w, width, height);
+        }
+        union.connect(w);
+    }
+
+    public static int[][] SelectPoint(TETile[][] w) {
+        return union.SelectPoint(w);
+    }
+
 
     // 通过并查集 找到连通的部分;
     static class UnionDs {
