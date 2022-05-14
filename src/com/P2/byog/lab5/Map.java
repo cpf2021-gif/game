@@ -145,9 +145,8 @@ public class Map {
         }
 
         // 随机选取起点和终点
-        public void SelectPoint(TETile[][] w) {
-            boolean flag = false;
-            while(!flag) {
+        public int[][] SelectPoint(TETile[][] w) {
+            while(true) {
                 Random random = new Random();
                 int x1 = random.nextInt(width);
                 int x2 = random.nextInt(width);
@@ -160,7 +159,7 @@ public class Map {
                         if(isConnected(index1,index2)) {
                             w[x1][y1] = Tileset.PLAYER;
                             w[x2][y2] = Tileset.LOCKED_DOOR;
-                            flag = true;
+                            return new int[][]{{x1,y1},{x2,y2}};
                         }
                     }
                 }
