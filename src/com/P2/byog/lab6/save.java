@@ -12,12 +12,40 @@ import java.io.*;
 public class save {
     public static void main(String[] args) {
 
-        Map2 map = readMap(50,50);
         TETile[][] world = new TETile[50][50];
+        boolean loop = false;
+        Map2 map = new Map2(50,50);
         TERenderer ter = new TERenderer();
-        ter.initialize(map.WIDTH, map.HEIGHT);
+        ter.initialize(50, 50);
+        String[] s = {"New game (N)","Load Game (L)","Quit (q)"};
 
+        // 开始界面
+        drawFrame(s);
+        while(!loop) {
+            if(StdDraw.hasNextKeyTyped()) {
+                char c = StdDraw.nextKeyTyped();
+                // 生成新游戏
+                if (c == 'n') {
+                    File f = new File("test.data");
+                    if(f.exists()) {
+                        f.delete();
+                    }
+                    loop = true;
+                } else if (c == 'q') {
+                    writeMap(map);
+                    System.exit(0);
+                } else if (c == 'l') {
+                    map = readMap(50,50);
+                    loop = true;
+                }
+            }
+        }
+
+        // 清空设置
+        StdDraw.enableDoubleBuffering();
+        ter.initialize(50, 50);
         changeWorld(map.getWorld(),world);
+        ter.renderFrame(world);
 
         while (!isWin(map)) {
             if (StdDraw.hasNextKeyTyped()) {
@@ -29,8 +57,10 @@ public class save {
                 else {
                     move(map,c);
                     changeWorld(map.getWorld(),world);
+                    ter.renderFrame(world);
                 }
             }
+            changeWorld(map.getWorld(),world);
             ter.renderFrame(world);
         }
         File file = new File("test.data");
@@ -90,9 +120,9 @@ public class save {
         }
     }
 
-    public static void  drawFrame(String s) {
+    public static void  drawFrame(String ... s) {
         int midWidth = 25;
-        int midHeight = 25;
+        int midHeight = 35;
 
         StdDraw.clear();
         StdDraw.clear(Color.black);
@@ -101,7 +131,10 @@ public class save {
         Font bigFont = new Font("Monaco", Font.BOLD, 30);
         StdDraw.setFont(bigFont);
         StdDraw.setPenColor(Color.white);
-        StdDraw.text(midWidth, midHeight, s);
+        for(String str : s) {
+            midHeight -= 5;
+            StdDraw.text(midWidth, midHeight, str);
+        }
         StdDraw.show();
     }
 
@@ -109,13 +142,11 @@ public class save {
         int[] p = movePoint(c,map);
         int x = p[0];
         int y = p[1];
-
         if(map.isOk(x,y)) {
             if(map.getWorld()[x][y] == 0 || map.getWorld()[x][y] == 3) {
                 swap(map,x,y);
                 map.playerX = x;
                 map.playerY = y;
-                System.out.println(map.playerX + " " + map.playerY);
             }
         }
     }
