@@ -10,6 +10,8 @@ public class Map {
     private static final int WIDTH = 50; // x
     private static final int HEIGHT = 50; // y
     private static UnionDs union;
+    private static int targetX;
+    private static int targetY;
 
     public static void main(String[] args) {
 
@@ -69,7 +71,14 @@ public class Map {
     }
 
     public static int[][] SelectPoint(TETile[][] w) {
-        return union.SelectPoint(w);
+        int[][] t = union.SelectPoint(w);
+        targetX = t[1][0];
+        targetY = t[1][1];
+        return t;
+    }
+
+    public static int[] SelectNpc(TETile[][] w) {
+        return union.creatNPC(targetX,targetY,w);
     }
 
 
@@ -183,9 +192,27 @@ public class Map {
 
         // 俩点间的距离
        private double distance(int x1, int y1, int x2, int y2) {
-            double dx = Math.abs(x1 - x2);
-            double dy = Math.abs(y1 - y2);
-            return Math.sqrt(dx * dx + dy * dy);
+           double dx = Math.abs(x1 - x2);
+           double dy = Math.abs(y1 - y2);
+           return Math.sqrt(dx * dx + dy * dy);
+       }
+
+       // 找npc
+        private int[] creatNPC(int x, int y, TETile[][] w) {
+            Random random = new Random();
+            int x_;
+            int y_;
+            while (true) {
+                x_ = random.nextInt(width);
+                y_ = random.nextInt(height);
+                if (w[x_][y_] == Tileset.NOTHING) {
+                    if (distance(x_, y_, x, y) > 15) {
+                        w[x_][y_] = Tileset.MOUNTAIN;
+                        break;
+                    }
+                }
+            }
+            return new int[]{x_, y_};
         }
     }
 }

@@ -6,6 +6,7 @@ import com.P2.byog.TileEngine.Tileset;
 import edu.princeton.cs.introcs.StdDraw;
 
 import java.awt.*;
+import java.util.Random;
 
 public class Move {
     private static final int WIDTH = 50; // x
@@ -14,6 +15,8 @@ public class Move {
     private static  int player_y;
     private static  int target_x;
     private static  int target_y;
+    private static int npc_x;
+    private static int npc_y;
 
     public static void main(String[] args) {
         TERenderer ter = new TERenderer();
@@ -23,7 +26,13 @@ public class Move {
         Map.initialize(world,WIDTH,HEIGHT);
         Map.connect(world,WIDTH,HEIGHT);
         getPosition(Map.SelectPoint(world));
+        int[] t = Map.SelectNpc(world);
+        npc_x = t[0];
+        npc_y = t[1];
+        // 测试npc移动
         ter.renderFrame(world);
+        npcMove(world,ter);
+
         move(world,ter);
         drawFrame("Win!!!");
     }
@@ -53,6 +62,28 @@ public class Move {
                 ter.renderFrame(w);
                 StdDraw.pause(50);
             }
+        }
+    }
+
+    public static void npcMove(TETile[][] w, TERenderer ter) {
+        int[][] d = {{1,0},{0,1},{-1,0},{0,-1}};
+        while (true) {
+            Random r = new Random();
+            int t = r.nextInt(4);
+            int x = npc_x + d[t][0];
+            int y = npc_y + d[t][1];
+            if (Map.isOk(x,y) && w[x][y] == Tileset.NOTHING) {
+                swap(x, y, npc_x,npc_y, w);
+                npc_x = x;
+                npc_y = y;
+                ter.renderFrame(w);
+            }
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            ter.renderFrame(w);
         }
     }
 
