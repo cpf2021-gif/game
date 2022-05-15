@@ -26,16 +26,20 @@ public class Move {
         Map.initialize(world,WIDTH,HEIGHT);
         Map.connect(world,WIDTH,HEIGHT);
         getPosition(Map.SelectPoint(world));
+
         int[] t = Map.SelectNpc(world);
         npc_x = t[0];
         npc_y = t[1];
         // 测试npc移动
 
         ter.renderFrame(world);
-        npcMove(world,ter);
 
         move(world,ter);
-        drawFrame("Win!!!");
+        if (gameOver()) {
+            drawFrame("Game over!!!");
+        }
+        else
+            drawFrame("Win!!!");
     }
 
     public static void getPosition(int[][] p) {
@@ -49,8 +53,13 @@ public class Move {
         return player_x == target_x && player_y == target_y;
     }
 
+    public static boolean gameOver() {
+        return player_x == npc_x && player_y == npc_y;
+    }
+
     public static void move(TETile[][] w, TERenderer ter) {
         while (!isWin()) {
+            npcMove(w,ter);
             if(!StdDraw.hasNextKeyTyped())
                 continue;
             char ch = StdDraw.nextKeyTyped();
@@ -61,14 +70,20 @@ public class Move {
                 player_x = x;
                 player_y = y;
                 ter.renderFrame(w);
-                StdDraw.pause(50);
+
+            }
+            else if(Map.isOk(x,y) && w[x][y] == Tileset.MOUNTAIN) {
+                w[x][y] = Tileset.PLAYER;
+                w[player_x][player_y] = Tileset.NOTHING;
+                player_x = x;
+                player_y = y;
+                return;
             }
         }
     }
 
     public static void npcMove(TETile[][] w, TERenderer ter) {
         int[][] d = {{1,0},{0,1},{-1,0},{0,-1}};
-        while (true) {
             Random r = new Random();
             int t = r.nextInt(4);
             int x = npc_x + d[t][0];
@@ -80,12 +95,10 @@ public class Move {
                 ter.renderFrame(w);
             }
             try {
-                Thread.sleep(50);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            ter.renderFrame(w);
-        }
     }
 
     public static int[] movePoint(char ch) {
