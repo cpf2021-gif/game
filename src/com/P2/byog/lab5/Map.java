@@ -12,6 +12,8 @@ public class Map {
     private static UnionDs union;
     private static int targetX;
     private static int targetY;
+    private static int playerX;
+    private static int playerY;
 
     public static void main(String[] args) {
 
@@ -72,13 +74,15 @@ public class Map {
 
     public static int[][] SelectPoint(TETile[][] w) {
         int[][] t = union.SelectPoint(w);
+        playerX = t[0][0];
+        playerY = t[0][1];
         targetX = t[1][0];
         targetY = t[1][1];
         return t;
     }
 
     public static int[] SelectNpc(TETile[][] w) {
-        return union.creatNPC(targetX,targetY,w);
+        return union.creatNPC(targetX,targetY,playerX,playerY,w);
     }
 
 
@@ -198,15 +202,18 @@ public class Map {
        }
 
        // 找npc
-        private int[] creatNPC(int x, int y, TETile[][] w) {
+        private int[] creatNPC(int x, int y, int px, int py, TETile[][] w) {
             Random random = new Random();
             int x_;
             int y_;
             while (true) {
                 x_ = random.nextInt(width);
                 y_ = random.nextInt(height);
-                if (w[x_][y_] == Tileset.NOTHING) {
-                    if (distance(x_, y_, x, y) > 15) {
+                int index1 = toIndex(x_,y_);
+                int index2 = toIndex(x,y);
+                int index3 = toIndex(px,py);
+                if (w[x_][y_] == Tileset.NOTHING && union.isConnected(index1,index2) && union.isConnected(index1,index3)) {
+                    if (distance(x_, y_, x, y) > 15 && distance(x_,y_,px,py) > 10) {
                         w[x_][y_] = Tileset.MOUNTAIN;
                         break;
                     }

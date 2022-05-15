@@ -30,6 +30,7 @@ public class Move {
         npc_x = t[0];
         npc_y = t[1];
         // 测试npc移动
+
         ter.renderFrame(world);
         npcMove(world,ter);
 
